@@ -41,7 +41,6 @@ export function makeTransform(ctx: Context): Transformer {
     ctx.updateUsageMap(sfcPath, imagePaths);
 
     transformed = `${head.join('\n')}\n${transformed}`;
-    debug(transformed);
 
     return transformed;
   }

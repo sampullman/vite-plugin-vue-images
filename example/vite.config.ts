@@ -9,7 +9,7 @@ const config: UserConfig = {
       dirs: ['src/assets/img', 'src/static/img'],
       customResolvers: [
         (name: string) => {
-          if(name === 'TestCustomResolver') {
+          if(name === 'TestCustom') {
             return '/src/assets/test_custom.png';
           }
         },

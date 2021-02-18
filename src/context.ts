@@ -176,36 +176,22 @@ export class Context {
 
   findImage(name: string, excludePaths: string[] = []): ImageInfo | undefined {
     // resolve from fs
-    const info = this._imageNameMap[name]
-    if(info && !excludePaths.includes(info.path) && !excludePaths.includes(info.path.slice(1)))
-      return info
+    const info = this._imageNameMap[name];
+    if(info && !excludePaths.includes(info.path) && !excludePaths.includes(info.path.slice(1))) {
+      return info;
+    }
 
     // custom resolvers
     for(const resolver of (this.options.customResolvers || [])) {
-      const result = resolver(name)
-      if(result) {
-        if(typeof result === 'string') {
-          return {
-            name,
-            path: result,
-          }
+      let path = resolver(name);
+      if(path) {
+        if(typeof path !== 'string') {
+          path = path.path;
         }
-        else {
-          return {
-            name,
-            path: result.path,
-          }
-        }
+        return { name, path };
       }
     }
-
-    return undefined
-  }
-
-  findImages(names: string[], excludePaths: string[] = []): ImageInfo[] {
-    return names
-      .map(name => this.findImage(name, excludePaths))
-      .filter(Boolean) as ImageInfo[];
+    return undefined;
   }
 
   normalizePath(path: string) {
@@ -225,9 +211,6 @@ export class Context {
   /**
    * Search for images
    * Called multiple times to ensure file loaded, should normally run only once.
-   *
-   * @param ctx
-   * @param force
    */
   searchGlob() {
     if(this._searched) {

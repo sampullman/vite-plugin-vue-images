@@ -36,7 +36,7 @@ export default {
 ```
 
 Use images in templates without `import`-ing and exposing via `data`. Image names are converted to PascalCase. Duplicate image names are not
-supported at this time.
+supported at this time. Currently, `v-bind:src` or the shorthand `:src` must be used.
 
 The plugin will convert this:
 
