@@ -84,6 +84,12 @@ ViteImages({
 
   // valid image extensions
   extensions: ['jpg', 'jpeg', 'png', 'svg', 'webp'],
+
+  // Props images are auto-imported to
+  props: ['src'],
+
+  // Override default behavior of name -> image path resolution
+  customResolvers: [],
 });
 ```
 
