@@ -81,6 +81,10 @@ export class Context {
     return this.viteConfig.root;
   }
 
+  get props(): String[] {
+    return this.options.props || [];
+  }
+
   setServer(server: ViteDevServer) {
     this._server = server;
   }

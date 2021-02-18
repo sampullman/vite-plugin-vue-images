@@ -7,6 +7,7 @@ const config: UserConfig = {
     Vue(),
     ViteImages({
       dirs: ['src/assets/img', 'src/static/img'],
+      props: ['src', 'iconSrc'],
       customResolvers: [
         (name: string) => {
           if(name === 'TestCustom') {

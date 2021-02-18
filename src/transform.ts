@@ -20,17 +20,20 @@ export function makeTransform(ctx: Context): Transformer {
     let no = 0;
     const imagePaths: string[] = [];
 
-    let transformed = code.replace(/_createVNode\("img", { src: _ctx\.(.+?) }/g, (str, match) => {
-      if(match && !match.startsWith('_')) {
-        debug(`| ${match}`);
-        const name = pascalCase(match);
-        imagePaths.push(name);
-        const image = ctx.findImage(name, [sfcPath]);
+    const props = ctx.props.join('|');
+    const regex = new RegExp(`{ (${props}): _ctx\.(.+?) }`, 'g');
+
+    let transformed = code.replace(regex, (str, prop, name) => {
+      if(prop && name && !name.startsWith('_')) {
+        debug(`| ${prop}: ${name}`);
+        const pascalName = pascalCase(name);
+        imagePaths.push(pascalName);
+        const image = ctx.findImage(pascalName, [sfcPath]);
         if(image) {
           const varName = `__vite_images_${no}`;
           head.push(stringifyImageImport({ ...image, name: varName }));
           no += 1;
-          return `_createVNode\("img", { src: ${varName} }`;
+          return `\{ ${prop}: ${varName} }`;
         }
       }
       return str;
