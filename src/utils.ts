@@ -9,13 +9,26 @@ export interface ResolveImage {
   namespace?: string
 }
 
-export function pascalCase(str: string) {
+export function pascalCase(str: string): string {
   const camel = camelCase(str);
   return camel[0].toUpperCase() + camel.slice(1);
 }
 
-export function camelCase(str: string) {
+export function camelCase(str: string): string {
   return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
+}
+
+export function appRelativePath(path: string, root: string): string {
+  return path.slice(root.length + 1);
+}
+
+// Helper for determining if `file` is within any of `dirs`
+// `root` is assumed to be prepended to each directory in `dirs`, wthout a trailing slash
+export function fileInDirs(root: string, dirs: string[], file: string): boolean {
+  return dirs.some((dir) => {
+    const rel = appRelativePath(dir, root);
+    return file.startsWith(rel);
+  });
 }
 
 export function parseId(id: string) {
@@ -32,8 +45,13 @@ export function parseId(id: string) {
   }
 }
 
-export function isEmpty(value: any) {
+export function isEmpty(value: any): boolean {
   return (!value || value === null || value === undefined || (Array.isArray(value) && Object.keys(value).length <= 0));
+}
+
+export function hasExtension(path: string, extensions: string[]) {
+  console.log(path, extensions);
+  return extensions.some(ext => path.endsWith(ext));
 }
 
 export function matchGlobs(filepath: string, globs: string[]) {

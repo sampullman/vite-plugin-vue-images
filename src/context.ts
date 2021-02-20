@@ -1,9 +1,16 @@
-import { relative } from 'path';
 import Debug from 'debug';
 import fg from 'fast-glob';
-import { HmrContext, ResolvedConfig, UpdatePayload, ViteDevServer } from 'vite';
+import { HmrContext, ResolvedConfig, UpdatePayload, ViteDevServer, normalizePath } from 'vite';
 import { ImageInfo, Options } from './types';
-import { pascalCase, getNameFromFilePath, resolveAlias, resolveOptions, matchGlobs } from './utils';
+import {
+  pascalCase,
+  appRelativePath,
+  fileInDirs,
+  getNameFromFilePath,
+  resolveAlias,
+  resolveOptions,
+  hasExtension,
+} from './utils';
 
 const debug = {
   images: Debug('vite-plugin-vue-images:context:images'),
@@ -26,7 +33,6 @@ export function searchImages(ctx: Context) {
   }
 
   debug.search(`${files.length} images found.`);
-
   ctx.addImages(files);
 }
 
@@ -44,49 +50,56 @@ export class Context {
     options: Options,
     public readonly viteConfig: ResolvedConfig,
   ) {
-    this.options = resolveOptions(options, viteConfig)
-    const { extensions, dirs } = this.options
-    const exts = extensions || [];
+    this.options = resolveOptions(options, viteConfig);
+    const exts = this.extensions;
 
     if(!exts.length) {
       throw new Error('[vite-plugin-vue-images] extensions are required to search for images');
     }
+    if(!this.props.length) {
+      throw new Error('[vite-plugin-vue-images] props required to replace images');
+    }
 
-    const extsGlob = exts.length === 1 ? exts[0] : `{${exts.join(',')}}`
+    const extsGlob = exts.length === 1 ? exts[0] : `{${exts.join(',')}}`;
 
-    this.globs = (dirs || []).map((d: string) =>
+    this.globs = (this.dirs || []).map((d: string) =>
         `${d}/**/*.${extsGlob}`
     );
-
-    if(viteConfig.command === 'serve') {
-      /*
-      chokidar.watch(dirs, { ignoreInitial: true })
-        .on('unlink', (path) => {
-          if(matchGlobs(path, this.globs)) {
-            this.removeImages(path)
-            this.onUpdate(path)
-          }
-        })
-        .on('add', (path) => {
-          if(matchGlobs(path, this.globs)) {
-            this.addImages(path)
-            this.onUpdate(path)
-          }
-        })
-      */
-    }
   }
 
   get root() {
     return this.viteConfig.root;
   }
 
-  get props(): String[] {
+  get props(): string[] {
     return this.options.props || [];
+  }
+
+  get dirs(): string[] {
+    return this.options.dirs || [];
+  }
+
+  get extensions(): string[] {
+    return this.options.extensions || [];
   }
 
   setServer(server: ViteDevServer) {
     this._server = server;
+    /*
+    server.watcher
+      .on('add', (path) => {
+        if(fileInDirs(this.root, this.dirs, path) && hasExtension(path, this.extensions)) {
+          this.addImages([path]);
+          this.onUpdate(path);
+        }
+      })
+      .on('unlink', (path) => {
+        // Remove non-app section of path
+        if(this.removeImage(appRelativePath(path, this.root))) {
+          this.onUpdate(path);
+        }
+      });
+      */
   }
 
   /**
@@ -99,16 +112,22 @@ export class Context {
       this._imageUsageMap[path] = new Set();
     }
 
+    (paths || []).forEach(p => this._imagePaths.add(p));
+    /*
     paths.forEach((p) => {
       this._imageUsageMap[path].add(p);
+      console.log('USAGE', path);
     });
+    */
   }
 
-  addImages(paths: string[]) {
-    debug.images('add', paths)
+  addImages(paths: string[]): boolean {
 
     const size = this._imagePaths.size;
-    (paths || []).forEach(p => this._imagePaths.add(p));
+    (paths || []).forEach(p => {
+      debug.images('add', p);
+      this._imagePaths.add(p);
+    });
     if(this._imagePaths.size !== size) {
       this.updateImageNameMap();
       return true;
@@ -116,16 +135,15 @@ export class Context {
     return false;
   }
 
-  removeImages(paths: string[]) {
-    debug.images('remove', paths)
+  removeImage(path: string): boolean {
+    const deleted = this._imagePaths.delete(path);
 
-    const size = this._imagePaths.size;
-    (paths || []).forEach(p => this._imagePaths.delete(p));
-    if(this._imagePaths.size !== size) {
+    debug.images(`remove(${deleted})`, path);
+
+    if(deleted) {
       this.updateImageNameMap();
-      return true;
     }
-    return false;
+    return deleted;
   }
 
   onUpdate(path: string) {
@@ -136,17 +154,18 @@ export class Context {
     const payload: UpdatePayload = {
       type: 'update',
       updates: [],
-    }
-    const timestamp = +new Date()
-    const name = pascalCase(getNameFromFilePath(path, this.options))
+    };
+    const timestamp = +new Date();
+    const name = pascalCase(getNameFromFilePath(path, this.options));
+    debug.hmr('UPDATE', name);
 
     Object.entries(this._imageUsageMap)
       .forEach(([key, values]) => {
         if(values.has(name)) {
-          const r = `/${relative(this.viteConfig.root, key)}`
+          debug.hmr('...updated', key);
           payload.updates.push({
-            acceptedPath: r,
-            path: r,
+            acceptedPath: key,
+            path: key,
             timestamp,
             type: 'js-update',
           })
@@ -166,14 +185,14 @@ export class Context {
       .forEach((path) => {
         const name = pascalCase(getNameFromFilePath(path, this.options))
         if(this._imageNameMap[name]) {
-          console.warn(`[vite-plugin-vue-images] image "${name}"(${path}) has naming conflicts with other images, ignored.`)
-          return
+          console.warn(`[vite-plugin-vue-images] Ignored "${name}"(${path}), it conflicts with another image.`)
+          return;
         }
-        debug.search(`Special name ${name}`);
+        console.log(path);
         this._imageNameMap[name] = {
           name,
           absolute: path,
-          path: `/${this.relative(path)}`,
+          path: `/${normalizePath(path)}`,
         }
       })
   }
@@ -201,13 +220,6 @@ export class Context {
   normalizePath(path: string) {
     // @ts-expect-error backward compatibility
     return resolveAlias(path, this.viteConfig?.resolve?.alias || this.viteConfig?.alias || []);
-  }
-
-  relative(path: string) {
-    if(path.startsWith('/') && !path.startsWith(this.root)) {
-      return path.slice(1).replace(/\\/g, '/');
-    }
-    return relative(this.root, path).replace(/\\/g, '/');
   }
 
   _searched = false
