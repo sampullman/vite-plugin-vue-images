@@ -217,7 +217,7 @@ export class Context {
     return undefined;
   }
 
-  normalizePath(path: string) {
+  resolvePathAlias(path: string) {
     // @ts-expect-error backward compatibility
     return resolveAlias(path, this.viteConfig?.resolve?.alias || this.viteConfig?.alias || []);
   }

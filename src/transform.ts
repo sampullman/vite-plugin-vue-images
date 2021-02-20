@@ -13,7 +13,7 @@ export function makeTransform(ctx: Context): Transformer {
 
     ctx.searchGlob();
 
-    const sfcPath = ctx.normalizePath(path);
+    const sfcPath = ctx.resolvePathAlias(path);
     debug(sfcPath);
 
     const head: string[] = [];
