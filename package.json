@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-vue-images",
   "description": "Auto import images for Vite+Vue projects",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
