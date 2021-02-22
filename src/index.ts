@@ -19,10 +19,8 @@ function VitePluginImages(options: Options = {}): Plugin {
       ctx.setServer(server);
     },
     transform(code, id) {
-      const { path, query } = parseId(id)
-      code = transformer(code, id, path, query);
-
-      return code;
+      const { path, query } = parseId(id);
+      return transformer(code, id, path, query);
     },
   }
 }

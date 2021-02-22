@@ -39,7 +39,6 @@ export interface Options {
 export interface ImageInfo {
   name: string
   path: string
-  absolute?: string
 }
 
 export type ImagesImportMap = Record<string, string[] | undefined>

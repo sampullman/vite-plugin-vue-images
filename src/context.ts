@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import fg from 'fast-glob';
-import { HmrContext, ResolvedConfig, UpdatePayload, ViteDevServer, normalizePath } from 'vite';
+import { ResolvedConfig, ViteDevServer } from 'vite';
 import { ImageInfo, Options } from './types';
 import {
   pascalCase,
@@ -10,6 +10,7 @@ import {
   resolveAlias,
   resolveOptions,
   hasExtension,
+  normalizePath,
 } from './utils';
 
 const debug = {
@@ -85,21 +86,21 @@ export class Context {
 
   setServer(server: ViteDevServer) {
     this._server = server;
-    /*
     server.watcher
       .on('add', (path) => {
-        if(fileInDirs(this.root, this.dirs, path) && hasExtension(path, this.extensions)) {
-          this.addImages([path]);
-          this.onUpdate(path);
+        const relPath = appRelativePath(path, this.root);
+        if(fileInDirs(this.dirs, relPath) && hasExtension(path, this.extensions)) {
+          this.addImages([relPath]);
+          this.onUpdate(relPath);
         }
       })
       .on('unlink', (path) => {
         // Remove non-app section of path
-        if(this.removeImage(appRelativePath(path, this.root))) {
-          this.onUpdate(path);
+        const relPath = appRelativePath(path, this.root);
+        if(this.removeImage(relPath)) {
+          this.onUpdate(relPath);
         }
       });
-      */
   }
 
   /**
@@ -112,13 +113,9 @@ export class Context {
       this._imageUsageMap[path] = new Set();
     }
 
-    (paths || []).forEach(p => this._imagePaths.add(p));
-    /*
     paths.forEach((p) => {
       this._imageUsageMap[path].add(p);
-      console.log('USAGE', path);
     });
-    */
   }
 
   addImages(paths: string[]): boolean {
@@ -150,30 +147,13 @@ export class Context {
     if(!this._server) {
       return;
     }
-
-    const payload: UpdatePayload = {
-      type: 'update',
-      updates: [],
-    };
-    const timestamp = +new Date();
     const name = pascalCase(getNameFromFilePath(path, this.options));
-    debug.hmr('UPDATE', name);
 
-    Object.entries(this._imageUsageMap)
-      .forEach(([key, values]) => {
-        if(values.has(name)) {
-          debug.hmr('...updated', key);
-          payload.updates.push({
-            acceptedPath: key,
-            path: key,
-            timestamp,
-            type: 'js-update',
-          })
-        }
-      });
+    const update = Object.values(this._imageUsageMap)
+      .some((values) => values.has(name));
 
-    if(payload.updates.length) {
-      this._server.ws.send(payload);
+    if(update) {
+      this._server.ws.send({ type: 'full-reload' });
     }
   }
 
@@ -183,18 +163,16 @@ export class Context {
     Array
       .from(this._imagePaths)
       .forEach((path) => {
-        const name = pascalCase(getNameFromFilePath(path, this.options))
+        const name = pascalCase(getNameFromFilePath(path, this.options));
         if(this._imageNameMap[name]) {
           console.warn(`[vite-plugin-vue-images] Ignored "${name}"(${path}), it conflicts with another image.`)
           return;
         }
-        console.log(path);
         this._imageNameMap[name] = {
           name,
-          absolute: path,
           path: `/${normalizePath(path)}`,
         }
-      })
+      });
   }
 
   findImage(name: string, excludePaths: string[] = []): ImageInfo | undefined {

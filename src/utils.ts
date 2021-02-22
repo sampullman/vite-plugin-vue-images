@@ -1,4 +1,5 @@
-import { parse, resolve } from 'path';
+import os from 'os';
+import { posix, parse, resolve } from 'path';
 import minimatch from 'minimatch';
 import { ResolvedConfig } from 'vite';
 import { ImageInfo, Options } from './types';
@@ -23,11 +24,9 @@ export function appRelativePath(path: string, root: string): string {
 }
 
 // Helper for determining if `file` is within any of `dirs`
-// `root` is assumed to be prepended to each directory in `dirs`, wthout a trailing slash
-export function fileInDirs(root: string, dirs: string[], file: string): boolean {
+export function fileInDirs(dirs: string[], file: string): boolean {
   return dirs.some((dir) => {
-    const rel = appRelativePath(dir, root);
-    return file.startsWith(rel);
+    return file.startsWith(dir);
   });
 }
 
@@ -50,7 +49,6 @@ export function isEmpty(value: any): boolean {
 }
 
 export function hasExtension(path: string, extensions: string[]) {
-  console.log(path, extensions);
   return extensions.some(ext => path.endsWith(ext));
 }
 
@@ -111,4 +109,14 @@ export function resolveAlias(filepath: string, alias: ResolvedConfig['resolve'][
     }
   }
   return result;
+}
+
+function slash(p: string): string {
+  return p.replace(/\\/g, '/')
+}
+
+const isWindows = os.platform() === 'win32'
+
+export function normalizePath(id: string): string {
+  return posix.normalize(isWindows ? slash(id) : id)
 }
