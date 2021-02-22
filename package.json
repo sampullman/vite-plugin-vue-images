@@ -2,7 +2,7 @@
   "name": "vite-plugin-vue-images",
   "description": "Auto import images for Vite+Vue projects",
   "version": "0.2.0",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "license": "MIT",
@@ -20,24 +20,24 @@
     "dev": "npm run build -- --watch",
     "example:dev": "npm -C example run dev",
     "example:build": "npm -C example run build",
-    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "build": "rimraf dist out-tsc && tsc && rollup -c rollup.config.js",
     "prepublishOnly": "npm run build",
     "release": "npx git-ensure -a && npx bumpp --commit --tag --push"
   },
   "dependencies": {
     "debug": "^4.3.2",
-    "fast-glob": "npm:@knightly/fast-glob@master",
-    "minimatch": "^3.0.4"
+    "fast-glob": "npm:@knightly/fast-glob@master"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
     "@types/debug": "^4.1.5",
-    "@types/minimatch": "^3.0.3",
     "@types/node": "^14.14.28",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "eslint": "^7.20.0",
+    "rimraf": "^3.0.2",
     "rollup": "^2.39.0",
-    "standard-version": "^9.1.0",
-    "tsup": "^3.11.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
     "typescript": "^4.1.3",
     "vite": "^2.0.1"
   }

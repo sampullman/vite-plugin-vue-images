@@ -1,18 +1,21 @@
 {
   "compilerOptions": {
+    "outDir": "out-tsc/",
     "module": "ESNext",
     "target": "es2017",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext"],
     "esModuleInterop": true,
     "strict": true,
     "strictNullChecks": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true
   },
   "exclude": [
     "**/dist",
     "**/node_modules",
-    "**/test"
+    "**/test",
+    "**/example",
   ]
 }

@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import fg from 'fast-glob';
-import { ResolvedConfig, ViteDevServer } from 'vite';
+import { ResolvedConfig, ViteDevServer, normalizePath } from 'vite';
 import { ImageInfo, Options } from './types';
 import {
   pascalCase,
@@ -10,7 +10,6 @@ import {
   resolveAlias,
   resolveOptions,
   hasExtension,
-  normalizePath,
 } from './utils';
 
 const debug = {

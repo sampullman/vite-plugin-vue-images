@@ -1,6 +1,5 @@
 import os from 'os';
 import { posix, parse, resolve } from 'path';
-import minimatch from 'minimatch';
 import { ResolvedConfig } from 'vite';
 import { ImageInfo, Options } from './types';
 import { defaultOptions } from './constants';
@@ -52,15 +51,6 @@ export function hasExtension(path: string, extensions: string[]) {
   return extensions.some(ext => path.endsWith(ext));
 }
 
-export function matchGlobs(filepath: string, globs: string[]) {
-  for(const glob of globs) {
-    if(minimatch(filepath, glob)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export function stringifyImageImport({ name, path }: ImageInfo) {
   return `import ${name} from '${path}'`;
 }
@@ -109,14 +99,4 @@ export function resolveAlias(filepath: string, alias: ResolvedConfig['resolve'][
     }
   }
   return result;
-}
-
-function slash(p: string): string {
-  return p.replace(/\\/g, '/')
-}
-
-const isWindows = os.platform() === 'win32'
-
-export function normalizePath(id: string): string {
-  return posix.normalize(isWindows ? slash(id) : id)
 }
