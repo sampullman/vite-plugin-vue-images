@@ -16,6 +16,7 @@
   "files": [
     "dist"
   ],
+  "keywords": ["vite", "vue", "images", "plugin", "development"],
   "scripts": {
     "dev": "npm run build -- --watch",
     "example:dev": "npm -C example run dev",

@@ -38,6 +38,9 @@ export default {
 Use images in templates without `import`-ing and exposing via `data`. Image names are converted to PascalCase. Duplicate image names are not
 supported at this time. Currently, `v-bind:src` or the shorthand `:src` must be used.
 
+Images in subdirectories are referenced by prepending the directory structure, e.g. `src/assets/img/icon/star.png` becomes `IconStar`. This
+behavior may change in the future, or become configurable.
+
 The plugin will convert this:
 
 ```vue
@@ -60,7 +63,7 @@ into this:
 </template>
 
 <script>
-import TestImage1 from '/src/assets/img/test_image1.vue'
+import TestImage1 from '/src/assets/img/test_image1.jpg'
 
 export default {
   name: 'App',
@@ -100,7 +103,7 @@ See the `example` directory.
 ## Thanks
 
 Thanks to [@antfu](https://github.com/antfu) and [@brattonross](https://github.com/brattonross). This project is inspired by
-[vite-olugin-components](https://github.com/antfu/vite-plugin-components), which is in turn inspired by [vite-plugin-voie](https://github.com/vamplate/vite-plugin-voie).
+[vite-plugin-components](https://github.com/antfu/vite-plugin-components), which is in turn inspired by [vite-plugin-voie](https://github.com/vamplate/vite-plugin-voie).
 
 ## License
 
