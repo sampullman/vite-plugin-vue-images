@@ -9,9 +9,23 @@
   </div>
   <div>
     <img
-      v-for="name in [Test, DeepTestFolder, TestCustom]"
-      :key="name"
-      :src="name"
+      v-for="image in [
+        {
+          title: 'Test title',
+          src: Test,
+        },
+        {
+          title: 'DeepTestFolder title',
+          src: DeepTestFolder,
+        },
+        {
+          title: 'TestCustom title',
+          src: TestCustom,
+        }
+      ]"
+      :key="image.title"
+      :src="image.src"
+      :title="image.title"
     >
   </div>
 </div>
