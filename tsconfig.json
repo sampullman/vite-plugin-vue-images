@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "out-tsc/",
     "module": "ESNext",
     "target": "es2017",
     "lib": ["ESNext"],

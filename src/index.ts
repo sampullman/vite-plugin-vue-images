@@ -25,6 +25,4 @@ function VitePluginImages(options: Options = {}): Plugin {
   }
 }
 
-export * from './types';
-export { camelCase, pascalCase } from './utils';
 export default VitePluginImages;

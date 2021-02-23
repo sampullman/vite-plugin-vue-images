@@ -1,22 +1,21 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import sourceMaps from 'rollup-plugin-sourcemaps';
-import { terser } from 'rollup-plugin-terser';
+import typescript from 'rollup-plugin-typescript2';
 
 const pkg = require('./package.json');
 
-const notMin = filename => filename.replace('.min', '');
-
 export default {
-  input: 'out-tsc/index.js',
-  output: [
-    { file: pkg.module, format: 'esm', sourcemap: true, plugins: [terser()] },
-    { file: notMin(pkg.module), format: 'esm' },
-    { file: pkg.main, format: 'cjs', sourcemap: true, plugins: [terser()] },
-    { file: notMin(pkg.main), format: 'cjs' },
-  ],
+  input: 'src/index.ts',
+  output: {
+    exports: 'default',
+    file: pkg.main,
+    format: 'cjs',
+    sourcemap: true,
+  },
   external: [...Object.keys(pkg.devDependencies), 'debug'],
   plugins: [
+    typescript(),
     commonjs(),
     resolve(),
     sourceMaps(),

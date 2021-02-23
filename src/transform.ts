@@ -20,12 +20,14 @@ export function makeTransform(ctx: Context): Transformer {
     let no = 0;
     const imagePaths: string[] = [];
 
-    const props = ctx.props.join('|');
-    const regex = new RegExp(`{ (${props}): _ctx\.(.+?) }`, 'g');
+    // TODO -- decide whether to include specific cases, instead of replacing all _ctx vars
+    // const props = ctx.props.join('|');
+    // const regex = new RegExp(`{ (${props}): _ctx\.(.+?) }`, 'g');
+    const regex = new RegExp('_ctx\.([a-zA-Z0-9]+)', 'g');
 
-    let transformed = code.replace(regex, (str, prop, name) => {
-      if(prop && name && !name.startsWith('_')) {
-        debug(`| ${prop}: ${name}`);
+    let transformed = code.replace(regex, (str, name) => {
+      if(name && !name.startsWith('_')) {
+        debug(`| ${name}`);
         const pascalName = pascalCase(name);
         imagePaths.push(pascalName);
         const image = ctx.findImage(pascalName, [sfcPath]);
@@ -33,12 +35,12 @@ export function makeTransform(ctx: Context): Transformer {
           const varName = `__vite_images_${no}`;
           head.push(stringifyImageImport({ ...image, name: varName }));
           no += 1;
-          return `\{ ${prop}: ${varName} }`;
+          // return `\{ ${prop}: ${varName} }`;
+          return varName;
         }
       }
       return str;
-    })
-
+    });
     debug(`^ (${no})`);
 
     ctx.updateUsageMap(sfcPath, imagePaths);
