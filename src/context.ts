@@ -56,9 +56,6 @@ export class Context {
     if(!exts.length) {
       throw new Error('[vite-plugin-vue-images] extensions are required to search for images');
     }
-    if(!this.props.length) {
-      throw new Error('[vite-plugin-vue-images] props required to replace images');
-    }
 
     const extsGlob = exts.length === 1 ? exts[0] : `{${exts.join(',')}}`;
 
@@ -69,10 +66,6 @@ export class Context {
 
   get root() {
     return this.viteConfig.root;
-  }
-
-  get props(): string[] {
-    return this.options.props || [];
   }
 
   get dirs(): string[] {

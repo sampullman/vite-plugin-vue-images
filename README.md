@@ -41,6 +41,8 @@ supported at this time. Currently, `v-bind:src` or the shorthand `:src` must be 
 Images in subdirectories are referenced by prepending the directory structure, e.g. `src/assets/img/icon/star.png` becomes `IconStar`. This
 behavior may change in the future, or become configurable.
 
+> **WARNING: Variables (props, data) will be clobbered in templates if they conflict with image names**
+
 The plugin will convert this:
 
 ```vue
@@ -87,9 +89,6 @@ ViteImages({
 
   // valid image extensions
   extensions: ['jpg', 'jpeg', 'png', 'svg', 'webp'],
-
-  // Props images are auto-imported to
-  props: ['src'],
 
   // Override default behavior of name -> image path resolution
   customResolvers: [],

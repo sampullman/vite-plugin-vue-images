@@ -23,12 +23,6 @@ export interface Options {
   extensions?: string[]
 
   /**
-   * View component properties used for substitution
-   * @default ['src']
-   */
-  props?: string[]
-
-  /**
    * Pass a function to resolve the image import path from the image name.
    *
    * Image names are always in PascalCase
