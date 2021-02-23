@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-vue-images",
   "description": "Auto import images for Vite+Vue projects",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "dist/index.min.cjs",
   "module": "dist/index.min.mjs",
   "types": "dist/index.d.ts",
@@ -16,7 +16,13 @@
   "files": [
     "dist"
   ],
-  "keywords": ["vite", "vue", "images", "plugin", "development"],
+  "keywords": [
+    "vite",
+    "vue",
+    "images",
+    "plugin",
+    "development"
+  ],
   "scripts": {
     "dev": "npm run build -- --watch",
     "example:dev": "npm -C example run dev",
