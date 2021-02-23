@@ -2,8 +2,8 @@
   "name": "vite-plugin-vue-images",
   "description": "Auto import images for Vite+Vue projects",
   "version": "0.3.0",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
+  "main": "dist/index.min.cjs",
+  "module": "dist/index.min.mjs",
   "types": "dist/index.d.ts",
   "license": "MIT",
   "author": "sampullman <sampullman@gmail.com>",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "debug": "^4.3.2",
-    "fast-glob": "npm:@knightly/fast-glob@master"
+    "fast-glob": "3.2.5"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.1.0",
@@ -38,7 +38,8 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.39.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
-    "typescript": "^4.1.3",
-    "vite": "^2.0.1"
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.1.5",
+    "vite": "^2.0.2"
   }
 }
