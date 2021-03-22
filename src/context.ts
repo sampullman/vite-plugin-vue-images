@@ -18,25 +18,6 @@ const debug = {
   hmr: Debug('vite-plugin-vue-images:context:hmr'),
 }
 
-export function searchImages(ctx: Context) {
-  debug.search(`started with: [${ctx.globs.join(', ')}]`);
-  const root = ctx.root;
-
-  const files = fg.sync(ctx.globs, {
-    ignore: ['node_modules'],
-    onlyFiles: true,
-    cwd: root,
-  });
-
-  if(!files.length && !ctx.options.customResolvers?.length) {
-    console.warn('[vite-plugin-vue-images] no images found');
-  }
-
-  debug.search(`${files.length} images found.`);
-  ctx.addImages(files);
-}
-
-
 export class Context {
   readonly options: Options
   readonly globs: string[]
@@ -74,6 +55,10 @@ export class Context {
 
   get extensions(): string[] {
     return this.options.extensions || [];
+  }
+
+  get searchRegex(): string {
+    return this.options.customSearchRegex || '';
   }
 
   setServer(server: ViteDevServer) {
@@ -192,6 +177,24 @@ export class Context {
     return resolveAlias(path, this.viteConfig?.resolve?.alias || this.viteConfig?.alias || []);
   }
 
+  private searchImages() {
+    debug.search(`started with: [${this.globs.join(', ')}]`);
+    const root = this.root;
+
+    const files = fg.sync(this.globs, {
+      ignore: ['node_modules'],
+      onlyFiles: true,
+      cwd: root,
+    });
+
+    if(!files.length && !this.options.customResolvers?.length) {
+      console.warn('[vite-plugin-vue-images] no images found');
+    }
+
+    debug.search(`${files.length} images found.`);
+    this.addImages(files);
+  }
+
   _searched = false
 
   /**
@@ -203,7 +206,7 @@ export class Context {
       return;
     }
 
-    searchImages(this);
+    this.searchImages();
     debug.search(this._imageNameMap);
     this._searched = true;
   }

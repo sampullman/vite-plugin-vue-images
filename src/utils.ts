@@ -1,5 +1,4 @@
-import os from 'os';
-import { posix, parse, resolve } from 'path';
+import { parse, resolve } from 'path';
 import { ResolvedConfig } from 'vite';
 import { ImageInfo, Options } from './types';
 import { defaultOptions } from './constants';

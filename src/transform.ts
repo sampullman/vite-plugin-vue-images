@@ -23,7 +23,7 @@ export function makeTransform(ctx: Context): Transformer {
     // TODO -- decide whether to include specific cases, instead of replacing all _ctx vars
     // const props = ctx.props.join('|');
     // const regex = new RegExp(`{ (${props}): _ctx\.(.+?) }`, 'g');
-    const regex = new RegExp('_ctx\.([a-zA-Z0-9]+)', 'g');
+    const regex = new RegExp(`_ctx\.${ctx.searchRegex}`, 'g');
 
     let transformed = code.replace(regex, (str, name) => {
       if(name && !name.startsWith('_')) {

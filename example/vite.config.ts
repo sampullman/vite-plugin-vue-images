@@ -14,6 +14,7 @@ const config: UserConfig = {
           }
         },
       ],
+      customSearchRegex: '([A-Z][a-zA-Z0-9]+)',
     }),
   ],
 };

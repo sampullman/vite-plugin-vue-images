@@ -92,6 +92,9 @@ ViteImages({
 
   // Override default behavior of name -> image path resolution
   customResolvers: [],
+
+  // Override Regex that searches for variables to replace. MUST include group
+  customSearchRegex: '([a-zA-Z0-9]+)',
 });
 ```
 

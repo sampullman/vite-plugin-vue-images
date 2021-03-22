@@ -8,4 +8,5 @@ export const defaultOptions: Required<Options> = {
   dirs: ['src/assets/img'],
   extensions: ['jpg', 'jpeg', 'png', 'svg', 'webp'],
   customResolvers: [],
+  customSearchRegex: '([a-zA-Z0-9]+)',
 };

@@ -1,10 +1,8 @@
 export type ImageResolveResult = string | { path: string; }
 
-export type ImageResolver = (name: string) => ImageResolveResult | null | undefined | void
+export type ImageResolver = (name: string) => ImageResolveResult | null | undefined | void;
 
-export type Matcher = (id: string) => boolean | null | undefined
-
-export type Transformer = (code: string, id: string, path: string, query: Record<string, string>) => string
+export type Transformer = (code: string, id: string, path: string, query: Record<string, string>) => string;
 
 /**
  * Plugin options.
@@ -28,6 +26,14 @@ export interface Options {
    * Image names are always in PascalCase
    */
   customResolvers?: ImageResolver[]
+
+  /**
+   * Custom Regex used to search for variable names.
+   * For example, to ensure only capitalized variables are replaced: '([A-Z][a-zA-Z0-9]+)'
+   * It MUST include a group
+   * @default '([a-zA-Z0-9]+)'
+   */
+  customSearchRegex?: string
 }
 
 export interface ImageInfo {
