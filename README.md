@@ -10,6 +10,9 @@
 
 <br>
 
+> [!WARNING]
+> This project is not currently maintained, but PRs are welcome. The version of Vite used is 2, and there are open issues which may affect usage.
+
 ## Usage
 
 > **Only works with Vite 2 & Vue 3.**
